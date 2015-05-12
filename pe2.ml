@@ -16,9 +16,10 @@ print_int (List.fold_left (+) 0  (List.filter (fun x -> (x mod 2 == 0)) (fib 1 2
 print_newline ();;
 
 
-type fibseq = Cons of ((int * int) * (int * int -> fibseq));;
+type 'a seq = Nils | Cons of 'a * ('a -> 'a seq);;
+type 'a infseq = Cons of 'a * ('a -> 'a infseq);;
 let rec fibgen (a, b) = Cons((b, a + b), fibgen);;
-let rec takewhile limit (Cons ((a, b), f)) =
-  if a >= limit then [] else a :: (takewhile limit (f(a, b)));;
-print_int (List.fold_left (+) 0 (List.filter (fun x -> (x mod 2 == 0)) (takewhile 4000000 (fibgen(1, 1)))));;
+let rec takewhile limit vf = function
+    Cons(a, f) -> if vf a >= limit then [] else (vf a) :: (takewhile limit vf (f a));;
+print_int (List.fold_left (+) 0 (List.filter (fun x -> (x mod 2 == 0)) (takewhile 4000000 (fun (a,b) -> a) (fibgen(1, 1)))));;
 print_newline ();
